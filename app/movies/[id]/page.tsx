@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { getMovieDetail } from "@/lib/tmdb";
 import ImageModal from "@/components/Modal/ImageModal";
+import Link from "next/link";
 
 const IMG_BASE = process.env.NEXT_PUBLIC_TMDB_IMAGE_BASE!;
 
@@ -75,45 +76,93 @@ export default async function MoviePage({ params }: { params: { id: string } }) 
             {year} · ⭐ {movie.vote_average.toFixed(1)} · ⏱ {movie.runtime} min
           </p>
 
-          <p className="text-textMuted italic leading-relaxed mb-10">{movie.overview}</p>
+          
 
           {/* Géneros */}
           {movie.genres.length > 0 && (
             <p className="mb-2">
-              <span className="font-semibold text-lg">Géneros:</span>{" "}
+              <span className="font-semibold text-lg text-accent">Géneros:</span>{" "}
               {movie.genres.map((g) => g.name).join(", ")}
             </p>
           )}
-
+          <div className="flex flex-row gap-30 md:justify-start">
           {/* Director */}
-          {director && (
-            <p className="mb-2">
-              <span className="font-semibold text-lg">Director:</span> {director.name}
-            </p>
-          )}
+            {director && (
+              <div className="mb-6">
+                <p className="font-semibold text-lg text-accent mb-2">Director:</p>
+                <div className="flex flex-col items-start">
+                  <Link
+                    href={`/person/${director.id}`}
+                    // target="_blank"
+                    className="mt-2 text-textMain hover:text-accent/70 text-center"
+                  >
+                  <Image
+                    src={
+                      director.profile_path
+                        ? `${IMG_BASE}/w185${director.profile_path}`
+                        : "/images/default-avatar.png"
+                    }
+                    alt={director.name}
+                    width={100}
+                    height={100}
+                    className="rounded-md object-cover shadow"
+                  />
+                    {director.name}
+                  </Link>
+                </div>
+              </div>
+            )}
 
+            {/* Sinopsis */}
+            <p className="text-textMuted italic leading-relaxed text-accent mt-10">{movie.overview}</p>
+          </div>
           {/* Actores */}
           {topCast.length > 0 && (
-            <p className="mb-8">
-              <span className="font-semibold text-lg">Reparto:</span>{" "}
-              {topCast.map((a) => `${a.name} (${a.character})`).join(", ")}
-            </p>
+            <div className="mb-8">
+              <p className="font-semibold text-lg text-accent mb-4">Reparto principal:</p>
+              <div className="grid grid-cols-3 md:grid-cols-5 gap-6">
+                {topCast.map((a) => (
+                  <div key={a.id} className="flex flex-col items-center">
+                    <Link
+                      href={`/person/${a.id}`}
+                      // target="_blank"
+                      className="mt-2 text-sm text-textMain hover:text-accent/70 text-center"
+                    >
+                    <Image
+                      src={
+                        a.profile_path
+                          ? `${IMG_BASE}/w185${a.profile_path}`
+                          : "/images/default-avatar.png"
+                      }
+                      alt={a.name}
+                      width={80}
+                      height={80}
+                      className="rounded-md object-cover shadow"
+                    />
+                      {a.name}
+                    </Link>
+                    <p className="text-xs text-textMuted text-center">{a.character}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
           )}
+
 
           {/* Budget y revenue */}
-          <div className="flex flex-row gap-10 justify-center md:justify-start">
+          {/* <div className="flex flex-row gap-10 justify-center md:justify-start">
 
-          {movie.budget > 0 && (
-            <p className="mb-2">
-              <span className="font-semibold text-sm">Presupuesto:</span> ${movie.budget.toLocaleString()}
-            </p>
-          )}
-          {movie.revenue > 0 && (
-            <p className="mb-2">
-              <span className="font-semibold text-sm">Recaudación:</span> ${movie.revenue.toLocaleString()}
-            </p>
-          )}
-          </div>
+            {movie.budget > 0 && (
+              <p className="mb-2">
+                <span className="font-semibold text-sm text-accent">Presupuesto:</span> ${movie.budget.toLocaleString()}
+              </p>
+            )}
+            {movie.revenue > 0 && (
+              <p className="mb-2">
+                <span className="font-semibold text-sm text-accent">Recaudación:</span> ${movie.revenue.toLocaleString()}
+              </p>
+            )}
+          </div> */}
         </div>
       </div>
 

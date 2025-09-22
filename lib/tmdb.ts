@@ -18,6 +18,7 @@ export type Movie = {
   first_air_date?: string;
   vote_average: number;
   overview: string;
+  job?: string; // para créditos de persona (director, etc.)
 };
 
 export type MovieDetail = Movie & {
@@ -38,6 +39,7 @@ export type MovieDetail = Movie & {
       id: number;
       name: string;
       job: string;
+      profile_path: string | null;
     }[];
   };
   videos: {
@@ -97,4 +99,13 @@ export async function getMovieDetail(id: string) {
    return tmdbGet<MovieDetail>(`/movie/${id}?append_to_response=credits,videos&language=es-ES`);
 }
 
+export async function getPersonDetail(id: string) {
+  return tmdbGet<{ id: number; name: string; biography: string; profile_path: string | null }>(
+    `/person/${id}`
+  );
+}
+
+export async function getPersonMovies(id: string) {
+  return tmdbGet<{ crew: Movie[]; cast: Movie[] }>(`/person/${id}/movie_credits`);
+}
 
