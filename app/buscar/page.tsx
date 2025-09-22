@@ -1,6 +1,6 @@
 import Link from "next/link";
-import MoviesGrid from "../components/MoviesGrid";
-import { getPopularMovies } from "../lib/tmdb";
+import MoviesGrid from "@/components/MoviesComponents/MoviesGrid";
+import { getPopularMovies } from "@/lib/tmdb";
 
 
 export default async function BuscarPage({ searchParams }: { searchParams: { page?: string } }) {

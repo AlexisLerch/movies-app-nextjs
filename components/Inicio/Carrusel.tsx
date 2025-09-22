@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import MovieCard from "./MovieCard";
+import MovieCard from "../MoviesComponents/MovieCard";
 
 export type Movie = {
   id: number;

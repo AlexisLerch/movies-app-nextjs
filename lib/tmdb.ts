@@ -20,6 +20,36 @@ export type Movie = {
   overview: string;
 };
 
+export type MovieDetail = Movie & {
+  genres: { id: number; name: string }[];
+  runtime: number;
+  status: string;
+  tagline: string;
+  budget: number;
+  revenue: number;
+  credits: {
+    cast: {
+      id: number;
+      name: string;
+      character: string;
+      profile_path: string | null;
+    }[];
+    crew: {
+      id: number;
+      name: string;
+      job: string;
+    }[];
+  };
+  videos: {
+    results: {
+      key: string;
+      site: string;
+      type: string;
+      name: string;
+    }[];
+  };
+};
+
 async function tmdbGet<T>(path: string, init?: RequestInit): Promise<T> {
   const url = new URL(`${BASE_URL}${path}`);
   url.searchParams.set("api_key", API_KEY);
@@ -57,8 +87,14 @@ export async function getPopularMoviesExact(count = 26) {
   return allResults.slice(0, count);
 }
 
-
 // Tendencias (por semana)
 export async function getTrendingMovies(page = 1) {
   return tmdbGet<TMDBPaginated<Movie>>(`/trending/movie/week?page=${page}`);
 }
+
+// Detalle de película
+export async function getMovieDetail(id: string) {
+   return tmdbGet<MovieDetail>(`/movie/${id}?append_to_response=credits,videos&language=es-ES`);
+}
+
+
