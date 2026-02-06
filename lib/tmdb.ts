@@ -81,7 +81,9 @@ export async function getPopularMoviesExact(count = 26) {
   let page = 1;
 
   while (allResults.length < count) {
-    const data = await tmdbGet<TMDBPaginated<Movie>>(`/movie/popular?page=${page}`);
+    const data = await tmdbGet<TMDBPaginated<Movie>>(
+      `/movie/popular?page=${page}`,
+    );
     allResults = [...allResults, ...data.results];
     page++;
   }
@@ -96,16 +98,24 @@ export async function getTrendingMovies(page = 1) {
 
 // Detalle de película
 export async function getMovieDetail(id: string) {
-   return tmdbGet<MovieDetail>(`/movie/${id}?append_to_response=credits,videos&language=es-ES`);
-}
-
-export async function getPersonDetail(id: string) {
-  return tmdbGet<{ id: number; name: string; biography: string; profile_path: string | null }>(
-    `/person/${id}`
+  return tmdbGet<MovieDetail>(
+    `/movie/${id}?append_to_response=credits,videos&language=es-ES`,
   );
 }
 
-export async function getPersonMovies(id: string) {
-  return tmdbGet<{ crew: Movie[]; cast: Movie[] }>(`/person/${id}/movie_credits`);
+// Detalle de persona actor/director
+export async function getPersonDetail(id: string) {
+  return tmdbGet<{
+    id: number;
+    name: string;
+    biography: string;
+    profile_path: string | null;
+  }>(`/person/${id}`);
 }
 
+// Obtener películas relacionadas a una persona (como actor o director)
+export async function getPersonMovies(id: string) {
+  return tmdbGet<{ crew: Movie[]; cast: Movie[] }>(
+    `/person/${id}/movie_credits`,
+  );
+}

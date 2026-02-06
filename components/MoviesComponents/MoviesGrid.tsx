@@ -1,5 +1,5 @@
 import MovieCard from "./MovieCard";
-import type { Movie } from "../../../lib/tmdb";
+import type { Movie } from "@/lib/tmdb";
 
 export default function MoviesGrid({ movies }: { movies: Movie[] }) {
   return (
