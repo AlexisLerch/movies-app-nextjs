@@ -30,7 +30,8 @@ model Movie {
   id          Int      @id @default(autoincrement())
   title       String
   overview    String
-  posterUrl   String?   // <-- nuevo campo opcional
-  releaseDate DateTime?
+  posterUrl   String?      // si lo usás
+  releaseDate DateTime?    // si lo usás
+  createdAt   DateTime @default(now())
 }
 
