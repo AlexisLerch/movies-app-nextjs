@@ -119,3 +119,15 @@ export async function getPersonMovies(id: string) {
     `/person/${id}/movie_credits`,
   );
 }
+
+export async function searchMovies(query: string, page = 1) {
+  const res = await fetch(
+    `${BASE_URL}/search/movie?api_key=${API_KEY}&query=${query}&page=${page}`,
+  );
+
+  if (!res.ok) {
+    throw new Error("Error searching movies");
+  }
+
+  return res.json();
+}
