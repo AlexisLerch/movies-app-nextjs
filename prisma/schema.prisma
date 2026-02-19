@@ -27,8 +27,10 @@ model Favorite {
 }
 
 model Movie {
-  id       Int    @id @default(autoincrement())
-  title    String
-  overview String
-  createdAt DateTime @default(now())
+  id          Int      @id @default(autoincrement())
+  title       String
+  overview    String
+  posterUrl   String?   // <-- nuevo campo opcional
+  releaseDate DateTime?
 }
+
