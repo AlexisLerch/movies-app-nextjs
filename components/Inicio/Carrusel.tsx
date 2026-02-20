@@ -15,7 +15,6 @@ export type Movie = {
   overview: string;
 };
 
-
 export default function Carousel({ movies }: { movies: Movie[] }) {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -45,14 +44,14 @@ export default function Carousel({ movies }: { movies: Movie[] }) {
         className="flex gap-4 overflow-x-auto no-scrollbar px-10"
       >
         {movies.map((movie) => (
-          <div key={movie.id} className="min-w-[150px]">
+          <div key={movie.id} className="min-w-37.5">
             <MovieCard
-                id={movie.id}
-                title={movie.title ?? movie.name ?? "Sin título"}
-                poster_path={movie.poster_path}
-                vote_average={movie.vote_average}
-                release_date={movie.release_date ?? movie.first_air_date}
-                />
+              id={movie.id}
+              title={movie.title ?? movie.name ?? "Sin título"}
+              poster_path={movie.poster_path}
+              vote_average={movie.vote_average}
+              release_date={movie.release_date ?? movie.first_air_date}
+            />
           </div>
         ))}
       </div>

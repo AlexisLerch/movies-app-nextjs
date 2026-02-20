@@ -9,6 +9,7 @@ import { redirect } from "next/navigation";
 
 export default async function PageInicio() {
   const session = await getServerSession(authOptions);
+  console.log(session);
 
   if (!session) {
     redirect("/login");
@@ -24,8 +25,11 @@ export default async function PageInicio() {
     <div className="mx-auto max-w-6xl p-6 space-y-10 bg-color-background text-color-foreground min-h-screen ">
       <section className="w-full mb-6">
         <h1 className="text-2xl font-semibold text-textMuted/60 mt-6 text-center opacity-50">
-          Welcome back, <span className="text-textMain/80">Alexis Lerch</span>.
-          Here’s what your friends have been watching…
+          Welcome back,{" "}
+          <span className="text-textMain/80 text-blue-300 font-bold ">
+            {session.user.name}
+          </span>
+          . Here’s what your friends have been watching…
         </h1>
       </section>
 
