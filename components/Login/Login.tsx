@@ -1,88 +1,82 @@
 "use client";
 
-import { useState } from "react";
+import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import Link from "next/link";
 
 export default function LoginForm() {
   const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  async function handleLogin(e: React.FormEvent) {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
-    setMessage("");
+    setError("");
 
-    try {
-      const res = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
+    const formData = new FormData(e.currentTarget);
 
-      const data = await res.json();
+    const res = await signIn("credentials", {
+      email: formData.get("email"),
+      password: formData.get("password"),
+      redirect: false,
+    });
 
-      if (!res.ok) {
-        setMessage(data.error || "Login failed");
-        setLoading(false);
-        return;
-      }
+    setLoading(false);
 
-      // ✅ Cookie ya está guardada automáticamente
-      router.push("/inicio");
-    } catch (err) {
-      console.error(err);
-      setMessage("Network error");
-      setLoading(false);
+    if (res?.error) {
+      setError("Credenciales incorrectas");
+    } else {
+      router.push("/iniciopage");
     }
-  }
+  };
 
   return (
-    <div className="w-full max-w-md bg-zinc-800 p-8 rounded-2xl shadow-xl">
-      <h1 className="text-3xl font-bold text-white text-center mb-6">
-        🎬 Movie App Login
-      </h1>
+    <div className="flex items-center justify-center bg-black">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-zinc-900 w-120 h-80 p-8 rounded-2xl shadow-2xl border border-zinc-800"
+      >
+        <h1 className="text-2xl font-bold text-white text-center mb-6">
+          Iniciar Sesión
+        </h1>
 
-      <form onSubmit={handleLogin} className="space-y-4">
-        <input
-          type="email"
-          placeholder="Email"
-          className="w-full p-3 rounded-lg bg-zinc-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          className="w-full p-3 rounded-lg bg-zinc-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full p-3 rounded-lg bg-blue-600 hover:bg-blue-700 transition text-white font-semibold disabled:opacity-50"
-        >
-          {loading ? "Logging in..." : "Login"}
-        </button>
+        <div className="flex flex-col gap-4">
+          <input
+            name="email"
+            type="email"
+            placeholder="Email"
+            required
+            className="bg-zinc-800 text-white px-4 py-2 rounded-lg border border-zinc-700 focus:outline-none focus:ring-2 focus:ring-white transition"
+          />
+
+          <input
+            name="password"
+            type="password"
+            placeholder="Contraseña"
+            required
+            className="bg-zinc-800 text-white px-4 py-2 rounded-lg border border-zinc-700 focus:outline-none focus:ring-2 focus:ring-white transition"
+          />
+
+          {error && <p className="text-sm text-red-500 text-center">{error}</p>}
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="bg-white text-black font-semibold py-2 rounded-lg hover:bg-gray-200 transition"
+          >
+            {loading ? "Entrando..." : "Entrar"}
+          </button>
+        </div>
+
+        <p className="text-sm text-gray-400 text-center mt-6">
+          ¿No tenés cuenta?{" "}
+          <Link href="/register" className="text-white hover:underline">
+            Registrate
+          </Link>
+        </p>
       </form>
-
-      {message && <p className="text-red-400 text-center mt-4">{message}</p>}
-
-      {/* Botón de Register */}
-      <div className="mt-6 text-center">
-        <p className="text-white mb-2">¿No tienes cuenta?</p>
-        <button
-          onClick={() => router.push("/register")}
-          className="px-6 py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white font-semibold transition"
-        >
-          Register
-        </button>
-      </div>
     </div>
   );
 }

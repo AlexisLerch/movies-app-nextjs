@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "Movie" ADD COLUMN     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP;
+
+-- AlterTable
+ALTER TABLE "User" ADD COLUMN     "name" TEXT NOT NULL DEFAULT 'User';

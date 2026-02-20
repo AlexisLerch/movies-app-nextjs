@@ -1,44 +1,29 @@
-// app/api/auth/login/route.ts
+import NextAuth from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
-import { generateToken } from "@/lib/auth";
-import { NextResponse } from "next/server";
 
-export async function POST(req: Request) {
-  try {
-    const { email, password } = await req.json();
-
-    // Buscar usuario
-    const user = await prisma.user.findUnique({ where: { email } });
-    if (!user)
-      return NextResponse.json(
-        { error: "Invalid credentials" },
-        { status: 401 },
-      );
-
-    // Verificar contraseña
-    const validPassword = await bcrypt.compare(password, user.password);
-    if (!validPassword)
-      return NextResponse.json(
-        { error: "Invalid credentials" },
-        { status: 401 },
-      );
-
-    // Generar token
-    const token = generateToken(user.id);
-
-    // ✅ Devuelve cookie correctamente
-    return NextResponse.json(
-      { message: "Login successful" },
-      {
-        status: 200,
-        headers: {
-          "Set-Cookie": `token=${token}; Path=/; HttpOnly; Max-Age=${60 * 60 * 24 * 7}; SameSite=Lax; Secure=${process.env.NODE_ENV === "production"}`,
-        },
+const handler = NextAuth({
+  providers: [
+    CredentialsProvider({
+      name: "Credentials",
+      credentials: {},
+      async authorize(credentials) {
+        const user = await prisma.user.findUnique({
+          where: { email: credentials?.email },
+        });
+        if (!user) return null;
+        const isValid = await bcrypt.compare(
+          credentials?.password || "",
+          user.password,
+        );
+        if (!isValid) return null;
+        return { id: user.id, email: user.email, name: user.name };
       },
-    );
-  } catch (err) {
-    console.error("LOGIN ERROR:", err);
-    return NextResponse.json({ error: "Login error" }, { status: 500 });
-  }
-}
+    }),
+  ],
+  secret: process.env.NEXTAUTH_SECRET,
+  session: { strategy: "jwt" },
+});
+
+export { handler as GET, handler as POST };

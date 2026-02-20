@@ -1,10 +1,10 @@
+import NextAuth from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
-import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
-import { NextAuthOptions } from "next-auth";
 
-export const authOptions: NextAuthOptions = {
+const handler = NextAuth({
   adapter: PrismaAdapter(prisma),
 
   session: {
@@ -13,28 +13,29 @@ export const authOptions: NextAuthOptions = {
 
   providers: [
     CredentialsProvider({
-      name: "credentials",
-      credentials: {},
-      async authorize(credentials: Record<string, string> | undefined) {
-        if (!credentials) {
-          throw new Error("No credentials provided");
-        }
+      name: "Credentials",
+      credentials: {
+        email: { label: "Email", type: "text" },
+        password: { label: "Password", type: "password" },
+      },
 
-        const { email, password } = credentials;
-
-        if (!email || !password) {
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) {
           throw new Error("Credenciales incompletas");
         }
 
         const user = await prisma.user.findUnique({
-          where: { email },
+          where: { email: credentials.email },
         });
 
         if (!user) {
           throw new Error("Usuario no encontrado");
         }
 
-        const isValid = await bcrypt.compare(password, user.password);
+        const isValid = await bcrypt.compare(
+          credentials.password,
+          user.password,
+        );
 
         if (!isValid) {
           throw new Error("Contraseña incorrecta");
@@ -53,4 +54,6 @@ export const authOptions: NextAuthOptions = {
   },
 
   secret: process.env.NEXTAUTH_SECRET,
-};
+});
+
+export { handler as GET, handler as POST };

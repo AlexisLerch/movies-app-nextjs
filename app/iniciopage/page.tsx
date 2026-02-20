@@ -3,7 +3,17 @@ import MovieCard from "@/components/MoviesComponents/MovieCard";
 import Carousel from "@/components/Inicio/Carrusel";
 import Destacadas from "@/components/Inicio/Destacadas";
 
-export default async function Inicio() {
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { redirect } from "next/navigation";
+
+export default async function PageInicio() {
+  const session = await getServerSession(authOptions);
+
+  if (!session) {
+    redirect("/login");
+  }
+
   const results = await getPopularMoviesExact(26);
 
   const featured = results.slice(0, 4); // 4 más populares (destacadas)
