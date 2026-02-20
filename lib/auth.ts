@@ -18,7 +18,6 @@ export const authOptions: NextAuthOptions = {
         email: {},
         password: {},
       },
-
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
           throw new Error("Credenciales incompletas");
@@ -28,23 +27,19 @@ export const authOptions: NextAuthOptions = {
           where: { email: credentials.email },
         });
 
-        if (!user) {
-          throw new Error("Usuario no encontrado");
-        }
+        if (!user) throw new Error("Usuario no encontrado");
 
         const isValid = await bcrypt.compare(
           credentials.password,
           user.password,
         );
 
-        if (!isValid) {
-          throw new Error("Contraseña incorrecta");
-        }
+        if (!isValid) throw new Error("Contraseña incorrecta");
 
         return {
           id: user.id,
           email: user.email,
-          // name: user.name ?? "", // 👈 importante
+          name: user.name ?? "",
         };
       },
     }),
@@ -52,23 +47,16 @@ export const authOptions: NextAuthOptions = {
 
   callbacks: {
     async jwt({ token, user }) {
-      // Cuando el usuario hace login
       if (user) {
         token.id = user.id;
-        token.name = user.name;
-        token.email = user.email;
       }
-
       return token;
     },
 
     async session({ session, token }) {
       if (session.user) {
         session.user.id = token.id as string;
-        session.user.name = token.name as string;
-        session.user.email = token.email as string;
       }
-
       return session;
     },
   },
