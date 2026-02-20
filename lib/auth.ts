@@ -15,10 +15,13 @@ export const authOptions: NextAuthOptions = {
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        email: {},
-        password: {},
+        email: { label: "Email", type: "text" },
+        password: { label: "Password", type: "password" },
       },
-      async authorize(credentials) {
+
+      async authorize(
+        credentials: { email: string; password: string } | undefined,
+      ) {
         if (!credentials?.email || !credentials?.password) {
           throw new Error("Credenciales incompletas");
         }
@@ -27,14 +30,18 @@ export const authOptions: NextAuthOptions = {
           where: { email: credentials.email },
         });
 
-        if (!user) throw new Error("Usuario no encontrado");
+        if (!user) {
+          throw new Error("Usuario no encontrado");
+        }
 
         const isValid = await bcrypt.compare(
           credentials.password,
           user.password,
         );
 
-        if (!isValid) throw new Error("Contraseña incorrecta");
+        if (!isValid) {
+          throw new Error("Contraseña incorrecta");
+        }
 
         return {
           id: user.id,
