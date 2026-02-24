@@ -20,7 +20,7 @@ export default function Carousel({ movies }: { movies: Movie[] }) {
 
   const scroll = (direction: "left" | "right") => {
     if (containerRef.current) {
-      const amount = 300; // cuánto scrollear por click
+      const amount = 300;
       containerRef.current.scrollBy({
         left: direction === "left" ? -amount : amount,
         behavior: "smooth",
@@ -29,11 +29,11 @@ export default function Carousel({ movies }: { movies: Movie[] }) {
   };
 
   return (
-    <div className="relative">
+    <div className="relative w-full overflow-hidden">
       {/* Flecha izquierda */}
       <button
         onClick={() => scroll("left")}
-        className="absolute left-0 top-1/2 -translate-y-1/2 bg-black/50 text-white p-2 rounded-full z-10 hover:bg-black text-xl"
+        className="hidden sm:flex absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 text-white p-2 rounded-full z-10 hover:bg-black text-xl"
       >
         ←
       </button>
@@ -41,10 +41,25 @@ export default function Carousel({ movies }: { movies: Movie[] }) {
       {/* Carrusel */}
       <div
         ref={containerRef}
-        className="flex gap-4 overflow-x-auto no-scrollbar px-10"
+        className="
+          flex 
+          gap-4 
+          overflow-x-auto 
+          no-scrollbar 
+          scroll-smooth
+          px-4 sm:px-8
+        "
       >
         {movies.map((movie) => (
-          <div key={movie.id} className="min-w-37.5">
+          <div
+            key={movie.id}
+            className="
+              flex-shrink-0 
+              w-[140px] 
+              sm:w-[160px] 
+              md:w-[180px]
+            "
+          >
             <MovieCard
               id={movie.id}
               title={movie.title ?? movie.name ?? "Sin título"}
@@ -59,7 +74,7 @@ export default function Carousel({ movies }: { movies: Movie[] }) {
       {/* Flecha derecha */}
       <button
         onClick={() => scroll("right")}
-        className="absolute right-0 top-1/2 -translate-y-1/2 bg-black/50 text-white p-2 rounded-full z-10 hover:bg-black text-xl"
+        className="hidden sm:flex absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 text-white p-2 rounded-full z-10 hover:bg-black text-xl"
       >
         →
       </button>

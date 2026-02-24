@@ -10,12 +10,12 @@ export default function RegisterForm() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleRegister = async (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     setError("");
 
-    const formData = new FormData(e.currentTarget as HTMLFormElement);
+    const formData = new FormData(e.currentTarget);
 
     const res = await fetch("/api/auth/register", {
       method: "POST",
@@ -44,12 +44,20 @@ export default function RegisterForm() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-black">
+    <div className="w-full min-h-screen flex items-center justify-center px-4 bg-color-background">
       <form
         onSubmit={handleRegister}
-        className="bg-zinc-900 w-120 p-8 rounded-2xl shadow-2xl border border-zinc-800"
+        className="
+          w-full 
+          max-w-md 
+          bg-zinc-900 
+          p-6 sm:p-8 
+          rounded-2xl 
+          shadow-2xl 
+          border border-zinc-800
+        "
       >
-        <h1 className="text-2xl font-bold text-white text-center mb-6">
+        <h1 className="text-2xl sm:text-3xl font-bold text-white text-center mb-6">
           Crear Cuenta
         </h1>
 
@@ -59,7 +67,18 @@ export default function RegisterForm() {
             type="text"
             placeholder="Nombre"
             required
-            className="bg-zinc-800 text-white px-4 py-2 rounded-lg border border-zinc-700 focus:outline-none focus:ring-2 focus:ring-white transition"
+            className="
+              bg-zinc-800 
+              text-white 
+              px-4 py-3 
+              rounded-lg 
+              border border-zinc-700 
+              focus:outline-none 
+              focus:ring-2 
+              focus:ring-white 
+              transition
+              text-sm sm:text-base
+            "
           />
 
           <input
@@ -67,7 +86,18 @@ export default function RegisterForm() {
             type="email"
             placeholder="Email"
             required
-            className="bg-zinc-800 text-white px-4 py-2 rounded-lg border border-zinc-700 focus:outline-none focus:ring-2 focus:ring-white transition"
+            className="
+              bg-zinc-800 
+              text-white 
+              px-4 py-3 
+              rounded-lg 
+              border border-zinc-700 
+              focus:outline-none 
+              focus:ring-2 
+              focus:ring-white 
+              transition
+              text-sm sm:text-base
+            "
           />
 
           <input
@@ -75,15 +105,40 @@ export default function RegisterForm() {
             type="password"
             placeholder="Contraseña"
             required
-            className="bg-zinc-800 text-white px-4 py-2 rounded-lg border border-zinc-700 focus:outline-none focus:ring-2 focus:ring-white transition"
+            className="
+              bg-zinc-800 
+              text-white 
+              px-4 py-3 
+              rounded-lg 
+              border border-zinc-700 
+              focus:outline-none 
+              focus:ring-2 
+              focus:ring-white 
+              transition
+              text-sm sm:text-base
+            "
           />
 
-          {error && <p className="text-sm text-red-500 text-center">{error}</p>}
+          {error && (
+            <p className="text-sm text-red-500 text-center animate-pulse">
+              {error}
+            </p>
+          )}
 
           <button
             type="submit"
             disabled={loading}
-            className="bg-white text-black font-semibold py-2 rounded-lg hover:bg-gray-200 transition"
+            className="
+              bg-white 
+              text-black 
+              font-semibold 
+              py-3 
+              rounded-lg 
+              hover:bg-gray-200 
+              transition 
+              disabled:opacity-50 
+              disabled:cursor-not-allowed
+            "
           >
             {loading ? "Creando cuenta..." : "Registrarse"}
           </button>
@@ -91,7 +146,7 @@ export default function RegisterForm() {
 
         <p className="text-sm text-gray-400 text-center mt-6">
           ¿Ya tenés cuenta?{" "}
-          <Link href="/login" className="text-white hover:underline">
+          <Link href="/login" className="text-white hover:underline transition">
             Iniciar sesión
           </Link>
         </p>
