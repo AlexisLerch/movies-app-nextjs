@@ -32,57 +32,70 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="w-full border-b border-[var(--navbar-border)] bg-[var(--navbar-bg)] text-[var(--navbar-text)]">
-      {/* Contenedor */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          <Logo />
+    <>
+      <nav className="w-full border-b border-[var(--navbar-border)] bg-[var(--navbar-bg)] text-[var(--navbar-text)] relative z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <Logo />
 
-          {/* Desktop Links */}
-          <div className="hidden md:flex items-center gap-6">
-            {links.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`transition-colors hover:text-[var(--navbar-hover)] ${
-                  pathname === link.href
-                    ? "text-[var(--color-accent)] font-semibold"
-                    : ""
-                }`}
-              >
-                {link.label}
-              </Link>
-            ))}
+            {/* Desktop */}
+            <div className="hidden md:flex items-center gap-6">
+              {links.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`transition-colors hover:text-[var(--navbar-hover)] ${
+                    pathname === link.href
+                      ? "text-[var(--color-accent)] font-semibold"
+                      : ""
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              ))}
 
-            {isAuthenticated && (
-              <button
-                onClick={handleLogout}
-                className="ml-4 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition"
-              >
-                Logout
-              </button>
-            )}
+              {isAuthenticated && (
+                <button
+                  onClick={handleLogout}
+                  className="ml-4 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition"
+                >
+                  Logout
+                </button>
+              )}
+            </div>
+
+            {/* Mobile Button */}
+            <button
+              className="md:hidden text-2xl"
+              onClick={() => setMenuOpen(true)}
+            >
+              ☰
+            </button>
           </div>
-
-          {/* Mobile Button */}
-          <button
-            className="md:hidden text-2xl"
-            onClick={() => setMenuOpen(!menuOpen)}
-          >
-            ☰
-          </button>
         </div>
-      </div>
+      </nav>
 
-      {/* Mobile Menu */}
-      {menuOpen && (
-        <div className="md:hidden border-t border-[var(--navbar-border)] bg-[var(--navbar-bg)] px-4 py-4 space-y-4">
+      {/* Overlay */}
+      <div
+        className={`fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-300 md:hidden ${
+          menuOpen ? "opacity-100 visible" : "opacity-0 invisible"
+        }`}
+        onClick={() => setMenuOpen(false)}
+      />
+
+      {/* Side Drawer */}
+      <div
+        className={`fixed top-0 right-0 h-full w-64 bg-[var(--navbar-bg)] border-l border-[var(--navbar-border)] shadow-2xl transform transition-transform duration-300 md:hidden z-50 ${
+          menuOpen ? "translate-x-0" : "translate-x-full"
+        }`}
+      >
+        <div className="p-6 flex flex-col gap-6 mt-10">
           {links.map((link) => (
             <Link
               key={link.href}
               href={link.href}
               onClick={() => setMenuOpen(false)}
-              className={`block transition-colors hover:text-[var(--navbar-hover)] ${
+              className={`transition-colors hover:text-[var(--navbar-hover)] ${
                 pathname === link.href
                   ? "text-[var(--color-accent)] font-semibold"
                   : ""
@@ -98,13 +111,13 @@ export default function Navbar() {
                 handleLogout();
                 setMenuOpen(false);
               }}
-              className="w-full px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition"
+              className="mt-4 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition"
             >
               Logout
             </button>
           )}
         </div>
-      )}
-    </nav>
+      </div>
+    </>
   );
 }
