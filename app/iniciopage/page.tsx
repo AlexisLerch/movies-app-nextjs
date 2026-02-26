@@ -17,9 +17,9 @@ export default async function PageInicio() {
 
   const results = await getPopularMoviesExact(26);
 
-  const featured = results.slice(0, 4); // 4 más populares (destacadas)
-  const carousel = results.slice(4, 14); // 10 siguientes
-  const simpleList = results.slice(14, 26); // 10 más en grid
+  const featured = results.slice(0, 4);
+  const carousel = results.slice(4, 14);
+  const simpleList = results.slice(14, 26);
 
   return (
     <div className="mx-auto max-w-6xl p-6 space-y-10 bg-color-background text-color-foreground min-h-screen ">
