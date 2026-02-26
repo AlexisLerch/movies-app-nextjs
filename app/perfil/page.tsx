@@ -36,8 +36,12 @@ export default async function PerfilPage() {
     where: { userId: dbUser?.id },
   });
 
+  const watchCount = await prisma.watched.count({
+    where: { userId: dbUser?.id },
+  });
+
   const stats = {
-    watched: 128,
+    watched: watchCount,
     favorites: favoritesCount,
     lists: watchlistCount,
   };
@@ -69,12 +73,16 @@ export default async function PerfilPage() {
           {/* Stats */}
           <div className="flex justify-center md:justify-start gap-8 mt-6">
             <div>
-              <p className="font-bold text-lg">{stats.watched}</p>
-              <p className="text-textMuted text-sm">Watched</p>
+              <Link href="/perfil/vistas">
+                <p className="font-bold text-lg">{stats.watched}</p>
+                <p className="text-textMuted text-sm">Watched</p>
+              </Link>
             </div>
             <div>
-              <p className="font-bold text-lg">{stats.favorites}</p>
-              <p className="text-textMuted text-sm">Favorites</p>
+              <Link href="/perfil/favoritas">
+                <p className="font-bold text-lg">{stats.favorites}</p>
+                <p className="text-textMuted text-sm">Favorites</p>
+              </Link>
             </div>
             <div>
               <Link href="/perfil/watchlist">

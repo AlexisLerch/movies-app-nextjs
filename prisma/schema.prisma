@@ -16,6 +16,7 @@ model User {
 
   favorites Favorite[]
   watchlist Watchlist[]
+  watched  Watched[]
 }
 
 model Favorite {
@@ -45,4 +46,15 @@ model Movie {
   posterUrl   String?
   releaseDate DateTime?
   createdAt   DateTime @default(now())
+}
+
+model Watched {
+  id        String   @id @default(cuid())
+  userId    String
+  tmdbId    Int
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([userId, tmdbId])
 }
