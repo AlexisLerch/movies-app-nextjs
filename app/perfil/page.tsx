@@ -2,6 +2,8 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Image from "next/image";
+import { prisma } from "@/lib/prisma";
+import Link from "next/link";
 
 export default async function PerfilPage() {
   const session = await getServerSession(authOptions);
@@ -12,13 +14,6 @@ export default async function PerfilPage() {
 
   const user = session.user;
 
-  // 🔥 Mock temporal (después lo conectamos a tu backend)
-  const stats = {
-    watched: 128,
-    favorites: 4,
-    lists: 2,
-  };
-
   const favoriteMovies = [
     { id: 1, title: "Fight Club", poster: "/mock1.jpg" },
     { id: 2, title: "Interstellar", poster: "/mock2.jpg" },
@@ -26,14 +21,35 @@ export default async function PerfilPage() {
     { id: 4, title: "Whiplash", poster: "/mock4.jpg" },
   ];
 
+  const dbUser = await prisma.user.findUnique({
+    where: { email: user.email! },
+    select: {
+      id: true,
+    },
+  });
+
+  const watchlistCount = await prisma.watchlist.count({
+    where: { userId: dbUser?.id },
+  });
+
+  const favoritesCount = await prisma.favorite.count({
+    where: { userId: dbUser?.id },
+  });
+
+  const stats = {
+    watched: 128,
+    favorites: favoritesCount,
+    lists: watchlistCount,
+  };
+
   return (
-    <div className="min-h-screen bg-bgMain text-textMain px-6 py-10">
+    <div className="min-h-screen mx-auto max-w-6xl p-6 space-y-10 bg-bgMain text-textMain px-6 py-10">
       {/* HEADER PERFIL */}
       <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
         {/* Avatar */}
         <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-borderMain">
           <Image
-            src={user.image || "/avatar-placeholder.png"}
+            src={"/avatar-placeholder.png"}
             alt="Avatar"
             width={128}
             height={128}
@@ -61,8 +77,10 @@ export default async function PerfilPage() {
               <p className="text-textMuted text-sm">Favorites</p>
             </div>
             <div>
-              <p className="font-bold text-lg">{stats.lists}</p>
-              <p className="text-textMuted text-sm">Lists</p>
+              <Link href="/perfil/watchlist">
+                <p className="font-bold text-lg">{stats.lists}</p>
+                <p className="text-textMuted text-sm">WatchLists</p>
+              </Link>
             </div>
           </div>
         </div>

@@ -2,17 +2,29 @@ import Image from "next/image";
 import { getMovieDetail } from "@/lib/tmdb";
 import ImageModal from "@/components/Modal/ImageModal";
 import Link from "next/link";
-
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import WatchlistButton from "@/components/WatchlistButton";
+import FavoriteButton from "@/components/FavoriteButton";
 const IMG_BASE = process.env.NEXT_PUBLIC_TMDB_IMAGE_BASE!;
 
-export default async function MoviePage({ params }: { params: { id: string } }) {
+export default async function MoviePage({
+  params,
+}: {
+  params: { id: string };
+}) {
   const { id } = await params;
 
   const movie = await getMovieDetail(id);
 
   const year = movie.release_date?.slice(0, 4) ?? "";
-  const imgPoster = movie.poster_path ? `${IMG_BASE}/w500${movie.poster_path}` : null;
-  const imgBackdrop = movie.backdrop_path ? `${IMG_BASE}/w1280${movie.backdrop_path}` : null;
+  const imgPoster = movie.poster_path
+    ? `${IMG_BASE}/w500${movie.poster_path}`
+    : null;
+  const imgBackdrop = movie.backdrop_path
+    ? `${IMG_BASE}/w1280${movie.backdrop_path}`
+    : null;
 
   // Director
   const director = movie.credits.crew.find((c) => c.job === "Director");
@@ -22,9 +34,36 @@ export default async function MoviePage({ params }: { params: { id: string } }) 
 
   // Trailer de YouTube (si existe)
   const trailer = movie.videos.results.find(
-    (v) => v.site === "YouTube" && v.type === "Trailer"
+    (v) => v.site === "YouTube" && v.type === "Trailer",
   );
 
+  const session = await getServerSession(authOptions);
+
+  let isFavorite = false;
+  let isWatchlist = false;
+
+  if (session?.user?.id) {
+    const favorite = await prisma.favorite.findUnique({
+      where: {
+        userId_tmdbId: {
+          userId: session.user.id,
+          tmdbId: movie.id,
+        },
+      },
+    });
+
+    const watchlist = await prisma.watchlist.findUnique({
+      where: {
+        userId_tmdbId: {
+          userId: session.user.id,
+          tmdbId: movie.id,
+        },
+      },
+    });
+
+    isFavorite = !!favorite;
+    isWatchlist = !!watchlist;
+  }
   return (
     <main className="max-w-5xl mx-auto p-4 mt-10">
       {/* Banner */}
@@ -69,6 +108,15 @@ export default async function MoviePage({ params }: { params: { id: string } }) 
         {/* Info principal */}
         <div>
           <h1 className="text-3xl font-bold">{movie.title}</h1>
+
+          <div className="flex gap-4 my-4">
+            <FavoriteButton tmdbId={movie.id} initialIsFavorite={isFavorite} />
+
+            <WatchlistButton
+              tmdbId={movie.id}
+              initialIsWatchlist={isWatchlist}
+            />
+          </div>
           {movie.tagline && (
             <p className="italic text-textMuted mb-2">“{movie.tagline}”</p>
           )}
@@ -76,37 +124,39 @@ export default async function MoviePage({ params }: { params: { id: string } }) 
             {year} · ⭐ {movie.vote_average.toFixed(1)} · ⏱ {movie.runtime} min
           </p>
 
-          
-
           {/* Géneros */}
           {movie.genres.length > 0 && (
             <p className="mb-2">
-              <span className="font-semibold text-lg text-accent">Géneros:</span>{" "}
+              <span className="font-semibold text-lg text-accent">
+                Géneros:
+              </span>{" "}
               {movie.genres.map((g) => g.name).join(", ")}
             </p>
           )}
           <div className="flex flex-row gap-30 md:justify-start">
-          {/* Director */}
+            {/* Director */}
             {director && (
               <div className="mb-6">
-                <p className="font-semibold text-lg text-accent mb-2">Director:</p>
+                <p className="font-semibold text-lg text-accent mb-2">
+                  Director:
+                </p>
                 <div className="flex flex-col items-start">
                   <Link
                     href={`/person/${director.id}`}
                     // target="_blank"
                     className="mt-2 text-textMain hover:text-accent/70 text-center"
                   >
-                  <Image
-                    src={
-                      director.profile_path
-                        ? `${IMG_BASE}/w185${director.profile_path}`
-                        : "/images/default-avatar.png"
-                    }
-                    alt={director.name}
-                    width={100}
-                    height={100}
-                    className="rounded-md object-cover shadow"
-                  />
+                    <Image
+                      src={
+                        director.profile_path
+                          ? `${IMG_BASE}/w185${director.profile_path}`
+                          : "/images/default-avatar.png"
+                      }
+                      alt={director.name}
+                      width={100}
+                      height={100}
+                      className="rounded-md object-cover shadow"
+                    />
                     {director.name}
                   </Link>
                 </div>
@@ -114,12 +164,16 @@ export default async function MoviePage({ params }: { params: { id: string } }) 
             )}
 
             {/* Sinopsis */}
-            <p className="text-textMuted italic leading-relaxed text-accent mt-10">{movie.overview}</p>
+            <p className="text-textMuted italic leading-relaxed text-accent mt-10">
+              {movie.overview}
+            </p>
           </div>
           {/* Actores */}
           {topCast.length > 0 && (
             <div className="mb-8">
-              <p className="font-semibold text-lg text-accent mb-4">Reparto principal:</p>
+              <p className="font-semibold text-lg text-accent mb-4">
+                Reparto principal:
+              </p>
               <div className="grid grid-cols-3 md:grid-cols-5 gap-6">
                 {topCast.map((a) => (
                   <div key={a.id} className="flex flex-col items-center">
@@ -128,26 +182,27 @@ export default async function MoviePage({ params }: { params: { id: string } }) 
                       // target="_blank"
                       className="mt-2 text-sm text-textMain hover:text-accent/70 text-center"
                     >
-                    <Image
-                      src={
-                        a.profile_path
-                          ? `${IMG_BASE}/w185${a.profile_path}`
-                          : "/images/default-avatar.png"
-                      }
-                      alt={a.name}
-                      width={80}
-                      height={80}
-                      className="rounded-md object-cover shadow"
-                    />
+                      <Image
+                        src={
+                          a.profile_path
+                            ? `${IMG_BASE}/w185${a.profile_path}`
+                            : "/images/default-avatar.png"
+                        }
+                        alt={a.name}
+                        width={80}
+                        height={80}
+                        className="rounded-md object-cover shadow"
+                      />
                       {a.name}
                     </Link>
-                    <p className="text-xs text-textMuted text-center">{a.character}</p>
+                    <p className="text-xs text-textMuted text-center">
+                      {a.character}
+                    </p>
                   </div>
                 ))}
               </div>
             </div>
           )}
-
 
           {/* Budget y revenue */}
           {/* <div className="flex flex-row gap-10 justify-center md:justify-start">

@@ -15,6 +15,7 @@ model User {
   createdAt DateTime   @default(now())
 
   favorites Favorite[]
+  watchlist Watchlist[]
 }
 
 model Favorite {
@@ -25,6 +26,16 @@ model Favorite {
   user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, tmdbId]) // evita duplicados
+}
+
+model Watchlist {
+  id       String @id @default(cuid())
+  userId   String
+  tmdbId   Int
+
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, tmdbId])
 }
 
 model Movie {
