@@ -9,8 +9,9 @@ const IMG_BASE = process.env.NEXT_PUBLIC_TMDB_IMAGE_BASE!;
 
 type WatchedRecord = {
   id: string;
-  userId: number;
-  tmdbId: number;
+  userId: string;
+  tmdbId: string;
+  createdAt: Date;
 };
 
 type Movie = {
