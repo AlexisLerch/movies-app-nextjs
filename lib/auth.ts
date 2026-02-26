@@ -54,20 +54,18 @@ export const authOptions: NextAuthOptions = {
 
   callbacks: {
     async jwt({ token, user }) {
-      if (user) {
-        token.id = user.id;
-      }
+      if (user) token.id = user.id; // el id original de Prisma (número) se guarda en token
       return token;
     },
 
     async session({ session, token }) {
-      if (session.user) {
-        session.user.id = token.id as string;
+      if (session.user && token.id) {
+        // Guardamos como string para NextAuth (TypeScript) pero sabemos que viene de Prisma
+        session.user.id = String(token.id);
       }
       return session;
     },
   },
-
   pages: {
     signIn: "/login",
   },

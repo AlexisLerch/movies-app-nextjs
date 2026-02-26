@@ -13,6 +13,7 @@ export default async function PerfilPage() {
   }
 
   const user = session.user;
+  console.log("USER ID EN PERFIL:", user.id);
 
   const favoriteMovies = [
     { id: 1, title: "Fight Club", poster: "/mock1.jpg" },

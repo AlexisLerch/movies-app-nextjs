@@ -58,3 +58,11 @@ model Watched {
 
   @@unique([userId, tmdbId])
 }
+
+model Rating {
+  movieId Int
+  userId  String
+  score   Float
+
+  @@id([movieId, userId]) // clave compuesta
+}

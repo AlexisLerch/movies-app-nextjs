@@ -8,6 +8,8 @@ import { prisma } from "@/lib/prisma";
 import WatchlistButton from "@/components/Buttons/WatchlistButton";
 import FavoriteButton from "@/components/Buttons/FavoriteButton";
 import WatchedButton from "@/components/Buttons/WatchedButton";
+import StarRatings from "@/components/StarRatings";
+
 const IMG_BASE = process.env.NEXT_PUBLIC_TMDB_IMAGE_BASE!;
 
 export default async function MoviePage({
@@ -18,6 +20,7 @@ export default async function MoviePage({
   const { id } = await params;
 
   const movie = await getMovieDetail(id);
+  const movieId = Number(id);
 
   const year = movie.release_date?.slice(0, 4) ?? "";
   const imgPoster = movie.poster_path
@@ -127,7 +130,7 @@ export default async function MoviePage({
           <p className="text-textMuted mb-4">
             {year} · ⭐ {movie.vote_average.toFixed(1)} · ⏱ {movie.runtime} min
           </p>
-
+          <StarRatings movieId={movieId} />
           {/* Géneros */}
           {movie.genres.length > 0 && (
             <p className="mb-2">
