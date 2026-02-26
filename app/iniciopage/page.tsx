@@ -1,3 +1,4 @@
+export const runtime = "nodejs";
 import { getPopularMoviesExact } from "@/lib/tmdb";
 import MovieCard from "@/components/MoviesComponents/MovieCard";
 import Carousel from "@/components/Inicio/Carrusel";
