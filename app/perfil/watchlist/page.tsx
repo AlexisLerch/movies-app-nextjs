@@ -4,7 +4,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import Link from "next/link";
 import Image from "next/image";
-import { Favorite } from "@prisma/client/edge";
+import { Watchlist } from "@prisma/client/edge";
 
 const IMG_BASE = process.env.NEXT_PUBLIC_TMDB_IMAGE_BASE!;
 
@@ -34,7 +34,7 @@ export default async function WatchlistPage() {
   });
 
   const movies = await Promise.all(
-    favorites.map((fav: Favorite) => getMovieDetail(fav.tmdbId.toString())),
+    favorites.map((fav: Watchlist) => getMovieDetail(fav.tmdbId.toString())),
   );
 
   return (

@@ -5,8 +5,9 @@ import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import WatchlistButton from "@/components/WatchlistButton";
-import FavoriteButton from "@/components/FavoriteButton";
+import WatchlistButton from "@/components/Buttons/WatchlistButton";
+import FavoriteButton from "@/components/Buttons/FavoriteButton";
+import WatchedButton from "@/components/Buttons/WatchedButton";
 const IMG_BASE = process.env.NEXT_PUBLIC_TMDB_IMAGE_BASE!;
 
 export default async function MoviePage({
@@ -41,28 +42,22 @@ export default async function MoviePage({
 
   let isFavorite = false;
   let isWatchlist = false;
+  let isWatched = false;
 
   if (session?.user?.id) {
     const favorite = await prisma.favorite.findUnique({
-      where: {
-        userId_tmdbId: {
-          userId: session.user.id,
-          tmdbId: movie.id,
-        },
-      },
+      where: { userId_tmdbId: { userId: session.user.id, tmdbId: movie.id } },
     });
-
     const watchlist = await prisma.watchlist.findUnique({
-      where: {
-        userId_tmdbId: {
-          userId: session.user.id,
-          tmdbId: movie.id,
-        },
-      },
+      where: { userId_tmdbId: { userId: session.user.id, tmdbId: movie.id } },
+    });
+    const watched = await prisma.watched.findUnique({
+      where: { userId_tmdbId: { userId: session.user.id, tmdbId: movie.id } },
     });
 
     isFavorite = !!favorite;
     isWatchlist = !!watchlist;
+    isWatched = !!watched;
   }
   return (
     <main className="max-w-5xl mx-auto p-4 mt-10">
@@ -109,12 +104,21 @@ export default async function MoviePage({
         <div>
           <h1 className="text-3xl font-bold">{movie.title}</h1>
 
-          <div className="flex gap-4 my-4">
-            <FavoriteButton tmdbId={movie.id} initialIsFavorite={isFavorite} />
-
+          <div className="flex gap-4 my-4 w-full">
+            <FavoriteButton
+              tmdbId={movie.id}
+              initialIsFavorite={isFavorite}
+              className="flex-1 min-w-25"
+            />
             <WatchlistButton
               tmdbId={movie.id}
               initialIsWatchlist={isWatchlist}
+              className="flex-1 min-w-25"
+            />
+            <WatchedButton
+              tmdbId={movie.id}
+              initialIsWatched={isWatched}
+              className="flex-1 min-w-25"
             />
           </div>
           {movie.tagline && (
