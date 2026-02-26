@@ -1,57 +1,43 @@
 import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
 
-  if (!session?.user?.id) {
+  if (!session?.user?.email) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
   }
 
   const { tmdbId } = await req.json();
 
-  const existing = await prisma.favorite.findUnique({
-    where: {
-      userId_tmdbId: {
-        userId: session.user.id,
+  const user = await prisma.user.findUnique({
+    where: { email: session.user.email },
+  });
+
+  if (!user) {
+    return NextResponse.json(
+      { error: "Usuario no encontrado" },
+      { status: 404 },
+    );
+  }
+
+  try {
+    await prisma.watchlist.create({
+      data: {
+        userId: user.id,
         tmdbId,
       },
-    },
-  });
-
-  if (existing) {
-    await prisma.favorite.delete({
-      where: { id: existing.id },
     });
 
-    return NextResponse.json({ removed: true });
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Ya está en la watchlist" },
+      { status: 400 },
+    );
   }
-
-  const favorite = await prisma.favorite.create({
-    data: {
-      userId: session.user.id,
-      tmdbId,
-    },
-  });
-
-  return NextResponse.json(favorite);
-}
-
-export async function GET() {
-  const session = await getServerSession(authOptions);
-
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "No autorizado" }, { status: 401 });
-  }
-
-  const favorites = await prisma.favorite.findMany({
-    where: { userId: session.user.id },
-    orderBy: { id: "desc" },
-  });
-
-  return NextResponse.json(favorites);
 }
 
 export async function DELETE(req: Request) {
@@ -74,7 +60,7 @@ export async function DELETE(req: Request) {
     );
   }
 
-  await prisma.favorite.delete({
+  await prisma.watchlist.delete({
     where: {
       userId_tmdbId: {
         userId: user.id,

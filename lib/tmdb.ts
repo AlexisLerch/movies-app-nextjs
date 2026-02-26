@@ -131,3 +131,5 @@ export async function searchMovies(query: string, page = 1) {
 
   return res.json();
 }
+
+
