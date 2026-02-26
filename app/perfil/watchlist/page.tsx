@@ -4,9 +4,14 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import Link from "next/link";
 import Image from "next/image";
-import { Watchlist } from "@prisma/client/edge";
 
 const IMG_BASE = process.env.NEXT_PUBLIC_TMDB_IMAGE_BASE!;
+
+type WatchlistRecord = {
+  id: string;
+  userId: string;
+  tmdbId: number;
+};
 
 type Movie = {
   id: number;
@@ -29,12 +34,14 @@ export default async function WatchlistPage() {
     return <p>Usuario no encontrado</p>;
   }
 
-  const favorites = await prisma.favorite.findMany({
+  const watchlist = await prisma.watchlist.findMany({
     where: { userId: user.id },
   });
 
   const movies = await Promise.all(
-    favorites.map((fav: Watchlist) => getMovieDetail(fav.tmdbId.toString())),
+    watchlist.map((fav: WatchlistRecord) =>
+      getMovieDetail(fav.tmdbId.toString()),
+    ),
   );
 
   return (
