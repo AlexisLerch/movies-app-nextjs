@@ -8,7 +8,7 @@ import Image from "next/image";
 const IMG_BASE = process.env.NEXT_PUBLIC_TMDB_IMAGE_BASE!;
 
 type WatchedRecord = {
-  id: number;
+  id: string;
   userId: number;
   tmdbId: number;
 };
