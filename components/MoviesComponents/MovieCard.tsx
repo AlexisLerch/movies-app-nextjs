@@ -72,7 +72,7 @@ export default function MovieCard({
               className="w-full h-auto object-cover transition-transform duration-300 group-hover:scale-105"
             />
           ) : (
-            <div className="aspect-[2/3] w-full bg-borderMain grid place-items-center text-textMuted text-xs">
+            <div className="aspect-2/3 w-full bg-borderMain grid place-items-center text-textMuted text-xs">
               Sin póster
             </div>
           )}

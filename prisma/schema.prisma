@@ -19,21 +19,21 @@ model User {
 }
 
 model Favorite {
-  id       String @id @default(cuid())
-  userId   String
-  tmdbId   Int
+  id     String @id @default(cuid())
+  userId String
+  tmdbId Int
 
-  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, tmdbId]) // evita duplicados
+  @@unique([userId, tmdbId])
 }
 
 model Watchlist {
-  id       String @id @default(cuid())
-  userId   String
-  tmdbId   Int
+  id     String @id @default(cuid())
+  userId String
+  tmdbId Int
 
-  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, tmdbId])
 }
@@ -42,8 +42,7 @@ model Movie {
   id          Int      @id @default(autoincrement())
   title       String
   overview    String
-  posterUrl   String?      // si lo usás
-  releaseDate DateTime?    // si lo usás
+  posterUrl   String?
+  releaseDate DateTime?
   createdAt   DateTime @default(now())
 }
-

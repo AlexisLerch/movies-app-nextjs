@@ -33,7 +33,7 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className="w-full border-b border-[var(--navbar-border)] bg-[var(--navbar-bg)] text-[var(--navbar-text)] relative z-50">
+      <nav className="w-full border-b border-(--navbar-border) bg-(--navbar-bg) text-(--navbar-text) relative z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <Logo />
@@ -44,10 +44,8 @@ export default function Navbar() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`transition-colors hover:text-[var(--navbar-hover)] ${
-                    pathname === link.href
-                      ? "text-[var(--color-accent)] font-semibold"
-                      : ""
+                  className={`transition-colors hover:text-(--navbar-hover) ${
+                    pathname === link.href ? "text-accent font-semibold" : ""
                   }`}
                 >
                   {link.label}
@@ -85,7 +83,7 @@ export default function Navbar() {
 
       {/* Side Drawer */}
       <div
-        className={`fixed top-0 right-0 h-full w-64 bg-[var(--navbar-bg)] border-l border-[var(--navbar-border)] shadow-2xl transform transition-transform duration-300 md:hidden z-50 ${
+        className={`fixed top-0 right-0 h-full w-64 bg-(--navbar-bg) border-l border-(--navbar-border) shadow-2xl transform transition-transform duration-300 md:hidden z-50 ${
           menuOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
@@ -95,10 +93,8 @@ export default function Navbar() {
               key={link.href}
               href={link.href}
               onClick={() => setMenuOpen(false)}
-              className={`transition-colors hover:text-[var(--navbar-hover)] ${
-                pathname === link.href
-                  ? "text-[var(--color-accent)] font-semibold"
-                  : ""
+              className={`transition-colors hover:text-(--navbar-hover) ${
+                pathname === link.href ? "text-accent font-semibold" : ""
               }`}
             >
               {link.label}

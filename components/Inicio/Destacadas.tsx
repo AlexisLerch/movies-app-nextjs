@@ -35,7 +35,7 @@ export default function Destacadas({ movies }: Props) {
               "
             >
               {/* Imagen responsive con aspect ratio */}
-              <div className="relative w-full aspect-[16/9]">
+              <div className="relative w-full aspect-video">
                 <Image
                   src={`https://image.tmdb.org/t/p/w780${movie.backdrop_path}`}
                   alt={movie.title}
@@ -46,7 +46,7 @@ export default function Destacadas({ movies }: Props) {
               </div>
 
               {/* Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent p-4 sm:p-6 flex flex-col justify-end">
+              <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/40 to-transparent p-4 sm:p-6 flex flex-col justify-end">
                 <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-white">
                   {movie.title}
                 </h3>

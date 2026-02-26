@@ -92,7 +92,7 @@ export default async function MoviePage({
             src={imgPoster}
             alt={movie.title}
             thumb={
-              <div className="mx-auto mb-6 w-[60%] max-w-[280px] md:mx-0 md:mb-0 md:w-[300px]">
+              <div className="mx-auto mb-6 w-[60%] max-w-70 md:mx-0 md:mb-0 md:w-75">
                 <Image
                   src={imgPoster}
                   alt={movie.title}

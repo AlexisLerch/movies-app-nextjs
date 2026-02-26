@@ -10,14 +10,12 @@ import { redirect } from "next/navigation";
 
 export default async function PageInicio() {
   const session = await getServerSession(authOptions);
-  console.log(session);
 
   if (!session) {
     redirect("/login");
   }
 
   const results = await getPopularMoviesExact(26);
-  console.log("RESLTS", results);
 
   const featured = results.slice(0, 4); // 4 más populares (destacadas)
   const carousel = results.slice(4, 14); // 10 siguientes

@@ -4,7 +4,15 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import Link from "next/link";
 import Image from "next/image";
+import { Favorite } from "@prisma/client/edge";
+
 const IMG_BASE = process.env.NEXT_PUBLIC_TMDB_IMAGE_BASE!;
+
+type Movie = {
+  id: number;
+  title: string;
+  poster_path: string | null;
+};
 
 export default async function WatchlistPage() {
   const session = await getServerSession(authOptions);
@@ -26,7 +34,7 @@ export default async function WatchlistPage() {
   });
 
   const movies = await Promise.all(
-    favorites.map((fav) => getMovieDetail(fav.tmdbId.toString())),
+    favorites.map((fav: Favorite) => getMovieDetail(fav.tmdbId.toString())),
   );
 
   return (
@@ -34,7 +42,7 @@ export default async function WatchlistPage() {
       <h1 className="text-3xl font-bold mb-8">Mi Watchlist</h1>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-        {movies.map((movie) => {
+        {movies.map((movie: Movie) => {
           const imgSrc = movie.poster_path
             ? `${IMG_BASE}/w342${movie.poster_path}`
             : null;
@@ -51,7 +59,7 @@ export default async function WatchlistPage() {
                     className="w-full h-auto object-cover"
                   />
                 ) : (
-                  <div className="aspect-[2/3] bg-gray-800 grid place-items-center text-sm">
+                  <div className="aspect-2/3 bg-gray-800 grid place-items-center text-sm">
                     Sin imagen
                   </div>
                 )}

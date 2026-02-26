@@ -54,10 +54,10 @@ export default function Carousel({ movies }: { movies: Movie[] }) {
           <div
             key={movie.id}
             className="
-              flex-shrink-0 
-              w-[140px] 
-              sm:w-[160px] 
-              md:w-[180px]
+              shrink-0 
+              w-35 
+              sm:w-40 
+              md:w-45
             "
           >
             <MovieCard
