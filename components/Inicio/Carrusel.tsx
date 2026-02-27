@@ -2,18 +2,7 @@
 
 import { useRef } from "react";
 import MovieCard from "../MoviesComponents/MovieCard";
-
-export type Movie = {
-  id: number;
-  title?: string;
-  name?: string;
-  poster_path: string | null;
-  backdrop_path: string | null;
-  release_date?: string;
-  first_air_date?: string;
-  vote_average: number;
-  overview: string;
-};
+import type { Movie } from "@/lib/tmdb";
 
 export default function Carousel({ movies }: { movies: Movie[] }) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -60,13 +49,7 @@ export default function Carousel({ movies }: { movies: Movie[] }) {
               md:w-45
             "
           >
-            <MovieCard
-              id={movie.id}
-              title={movie.title ?? movie.name ?? "Sin título"}
-              poster_path={movie.poster_path}
-              vote_average={movie.vote_average}
-              release_date={movie.release_date ?? movie.first_air_date}
-            />
+            <MovieCard key={movie.id} movie={movie} />
           </div>
         ))}
       </div>

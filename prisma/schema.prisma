@@ -17,6 +17,8 @@ model User {
   favorites Favorite[]
   watchlist Watchlist[]
   watched  Watched[]
+  featuredMovies  FeaturedMovie[]
+  ratings Rating[]
 }
 
 model Favorite {
@@ -60,9 +62,24 @@ model Watched {
 }
 
 model Rating {
+  id      String @id @default(cuid())
   movieId Int
   userId  String
   score   Float
 
-  @@id([movieId, userId]) // clave compuesta
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([movieId, userId])
+}
+
+model FeaturedMovie {
+  id        String   @id @default(cuid())
+  userId    String
+  tmdbId    Int
+  slot      Int      // 1, 2, 3 o 4
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([userId, slot]) // un solo movie por slot
 }

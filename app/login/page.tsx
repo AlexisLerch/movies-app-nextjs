@@ -54,7 +54,7 @@ export default async function LoginPage() {
           "
           >
             {simpleList.map((movie) => (
-              <MovieCard key={movie.id} {...movie} />
+              <MovieCard key={movie.id} movie={movie} />
             ))}
           </div>
         </section>

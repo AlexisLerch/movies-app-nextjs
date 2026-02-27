@@ -27,7 +27,7 @@ body {
 }
  */
 
- @import "tailwindcss";
+@import "tailwindcss";
 @tailwind utilities;
 
 /* globals.css */
@@ -39,24 +39,22 @@ body {
   scrollbar-width: none; /* Firefox */
 }
 
-
 :root {
   /* Paleta general */
-  --background: #0a0a0a;       /* fondo principal */
-  --foreground: #f5f5f5;       /* texto principal */
-  --color-surface: #1a1a1a;    /* superficies (cards, navbar, etc.) */
-  --color-border: #2e2e2e;     /* líneas / bordes */
-  --color-muted: #a3a3a3;      /* texto secundario */
-  --color-accent: #dbc3d2;     /* color de acento (botones, enlaces) */
-  --color-error: #ef4444;      /* rojo para errores */
+  --background: #0a0a0a; /* fondo principal */
+  --foreground: #f5f5f5; /* texto principal */
+  --color-surface: #1a1a1a; /* superficies (cards, navbar, etc.) */
+  --color-border: #2e2e2e; /* líneas / bordes */
+  --color-muted: #a3a3a3; /* texto secundario */
+  --color-accent: #dbc3d2; /* color de acento (botones, enlaces) */
+  --color-error: #ef4444; /* rojo para errores */
 
   /* 🎯 Navbar */
-  --navbar-bg: #141414;        /* un gris distinto al body */
-  --navbar-text: #a896a1;      /* texto navbar */
-  --navbar-hover: #a896a1;     /* hover enlaces */
-  --navbar-border: #2a2a2a;    /* línea separadora */
+  --navbar-bg: #141414; /* un gris distinto al body */
+  --navbar-text: #a896a1; /* texto navbar */
+  --navbar-hover: #a896a1; /* hover enlaces */
+  --navbar-border: #2a2a2a; /* línea separadora */
 }
-
 
 @theme inline {
   --color-background: var(--background);
@@ -77,12 +75,21 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
 } */
- body {
+body {
   background-color: var(--background); /* color de fallback */
   background-image: url("/images/pattern.png");
-  background-size: auto;     /* mantiene el tamaño original */
+  background-size: auto; /* mantiene el tamaño original */
   background-position: top left;
   color: var(--foreground);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
 }
 
+/* Ocultar scrollbar */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
