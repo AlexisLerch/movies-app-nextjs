@@ -4,6 +4,8 @@ import { useSearchParams, useRouter } from "next/navigation";
 import LiveSearch from "@/components/Buscar/LiveSearch";
 import type { Movie } from "@/lib/tmdb";
 
+export const dynamic = "force-dynamic";
+
 export default function SelectFeaturedPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
