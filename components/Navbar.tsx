@@ -16,14 +16,14 @@ export default function Navbar() {
 
   const links = isAuthenticated
     ? [
-        { href: "/iniciopage", label: "Inicio🏠" },
-        { href: "/buscar", label: "Buscar🔍" },
-        { href: "/perfil", label: "Perfil👤" },
+        { href: "/iniciopage", label: "Inicio" },
+        { href: "/buscar", label: "Buscar" },
+        { href: "/perfil", label: "Perfil" },
       ]
     : [
         { href: "/login", label: "Login" },
         { href: "/register", label: "Register" },
-        { href: "/buscar", label: "Buscar🔍" },
+        { href: "/buscar", label: "Buscar" },
       ];
 
   const handleLogout = async () => {
@@ -44,8 +44,8 @@ export default function Navbar() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`transition-colors hover:text-(--navbar-hover) ${
-                    pathname === link.href ? "text-accent font-semibold" : ""
+                  className={`transition-colors hover:text-(--navbar-hover) text-lg text-textMuted/60 font-semibold ${
+                    pathname === link.href ? "text-accent font-bold" : ""
                   }`}
                 >
                   {link.label}
@@ -55,7 +55,7 @@ export default function Navbar() {
               {isAuthenticated && (
                 <button
                   onClick={handleLogout}
-                  className="ml-4 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition"
+                  className="ml-2 px-2 py-1 bg-red-500 hover:bg-red-400 text-gray-900 font-bold text-md rounded-lg transition"
                 >
                   Logout
                 </button>

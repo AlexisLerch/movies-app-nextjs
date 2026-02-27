@@ -25,11 +25,12 @@ export default async function PageInicio() {
     <div className="mx-auto max-w-6xl p-6 space-y-10 bg-color-background text-color-foreground min-h-screen ">
       <section className="w-full mb-6">
         <h1 className="text-2xl font-semibold text-textMuted/60 mt-6 text-center opacity-50">
-          Welcome back,{" "}
+          Bienvenido,{" "}
           <span className="text-textMain/80 text-blue-300 font-bold ">
             {session.user.name}
           </span>
-          . Here’s what your friends have been watching…
+          . Estas son las películas más populares del momento.
+          ¡Disfrútalas!{" "}
         </h1>
       </section>
 

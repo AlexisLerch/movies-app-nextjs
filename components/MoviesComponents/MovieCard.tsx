@@ -49,14 +49,6 @@ export default function MovieCard({
 
   return (
     <div className="relative">
-      {/* ❤️ BOTÓN */}
-      <button
-        onClick={toggleFavorite}
-        className="absolute top-2 right-2 z-10 bg-black/60 text-white p-2 rounded-full hover:scale-110 transition"
-      >
-        {saved ? "❤️" : "🤍"}
-      </button>
-
       <Link href={`/movies/${id}`} className="block group">
         <article
           className="rounded-lg overflow-hidden shadow transition-transform duration-300 cursor-pointer
