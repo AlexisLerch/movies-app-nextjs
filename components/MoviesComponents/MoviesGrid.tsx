@@ -1,3 +1,5 @@
+"use client";
+
 import MovieCard from "./MovieCard";
 import type { Movie } from "@/lib/tmdb";
 
@@ -8,10 +10,14 @@ interface MoviesGridProps {
 
 export default function MoviesGrid({ movies, onMovieClick }: MoviesGridProps) {
   return (
-    <section className="grid gap-6 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-      {movies.map((m) => (
-        <MovieCard key={m.id} movie={m} onClick={() => onMovieClick?.(m)} />
+    <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+      {movies.map((movie) => (
+        <MovieCard
+          key={movie.id}
+          movie={movie}
+          onClick={() => onMovieClick?.(movie)}
+        />
       ))}
-    </section>
+    </div>
   );
 }
