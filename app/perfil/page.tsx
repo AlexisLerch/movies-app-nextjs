@@ -4,6 +4,9 @@ import { redirect } from "next/navigation";
 import Image from "next/image";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
+import { getMovieDetail } from "@/lib/tmdb";
+import SimpleCarrusel from "@/components/SimpleCarrusel";
+import Avatar from "@/public/images/avatar.jpg";
 
 export default async function PerfilPage() {
   const session = await getServerSession(authOptions);
@@ -12,34 +15,86 @@ export default async function PerfilPage() {
     redirect("/login");
   }
 
-  const user = session.user;
-  console.log("USER ID EN PERFIL:", user.id);
-
-  const favoriteMovies = [
-    { id: 1, title: "Fight Club", poster: "/mock1.jpg" },
-    { id: 2, title: "Interstellar", poster: "/mock2.jpg" },
-    { id: 3, title: "The Dark Knight", poster: "/mock3.jpg" },
-    { id: 4, title: "Whiplash", poster: "/mock4.jpg" },
-  ];
-
   const dbUser = await prisma.user.findUnique({
-    where: { email: user.email! },
-    select: {
-      id: true,
+    where: { email: session.user.email! },
+    select: { id: true, name: true, email: true },
+  });
+
+  if (!dbUser) {
+    redirect("/login");
+  }
+
+  // ===============================
+  // STATS
+  // ===============================
+
+  const [watchlistCount, favoritesCount, watchCount] = await Promise.all([
+    prisma.watchlist.count({
+      where: { userId: dbUser.id },
+    }),
+    prisma.favorite.count({
+      where: { userId: dbUser.id },
+    }),
+    prisma.watched.count({
+      where: { userId: dbUser.id },
+    }),
+  ]);
+
+  // ===============================
+  // WATCHED + RATINGS
+  // ===============================
+
+  const watched = await prisma.watched.findMany({
+    where: { userId: dbUser.id },
+    orderBy: { createdAt: "desc" },
+    take: 12,
+  });
+
+  const ratings = await prisma.rating.findMany({
+    where: {
+      userId: dbUser.id,
+      movieId: {
+        in: watched.map((w) => w.tmdbId),
+      },
     },
   });
 
-  const watchlistCount = await prisma.watchlist.count({
-    where: { userId: dbUser?.id },
+  const ratingMap = Object.fromEntries(
+    ratings.map((r) => [r.movieId, r.score]),
+  );
+
+  const recentMovies = await Promise.all(
+    watched.map(async (w) => {
+      const movie = await getMovieDetail(String(w.tmdbId));
+
+      return {
+        ...w,
+        movie,
+        rating: ratingMap[w.tmdbId] ?? 0,
+      };
+    }),
+  );
+
+  // ===============================
+  // FEATURED
+  // ===============================
+
+  const featuredMovies = await prisma.featuredMovie.findMany({
+    where: { userId: dbUser.id },
   });
 
-  const favoritesCount = await prisma.favorite.count({
-    where: { userId: dbUser?.id },
-  });
+  const featuredWithDetails = await Promise.all(
+    featuredMovies.map(async (m) => {
+      try {
+        const movie = await getMovieDetail(String(m.tmdbId));
+        return { ...m, movie };
+      } catch {
+        return null;
+      }
+    }),
+  );
 
-  const watchCount = await prisma.watched.count({
-    where: { userId: dbUser?.id },
-  });
+  const validFeatured = featuredWithDetails.filter(Boolean);
 
   const stats = {
     watched: watchCount,
@@ -47,14 +102,15 @@ export default async function PerfilPage() {
     lists: watchlistCount,
   };
 
+  const slots = [1, 2, 3, 4];
+
   return (
-    <div className="min-h-screen mx-auto max-w-6xl p-6 space-y-10 bg-bgMain text-textMain px-6 py-10">
-      {/* HEADER PERFIL */}
+    <div className="min-h-screen mx-auto max-w-6xl bg-bgMain text-textMain px-6 py-10 space-y-10">
+      {/* HEADER */}
       <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
-        {/* Avatar */}
         <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-borderMain">
           <Image
-            src={"/avatar-placeholder.png"}
+            src={Avatar}
             alt="Avatar"
             width={128}
             height={128}
@@ -62,65 +118,99 @@ export default async function PerfilPage() {
           />
         </div>
 
-        {/* Info */}
         <div className="text-center md:text-left">
-          <h1 className="text-3xl font-bold">{user.name}</h1>
-          <p className="text-textMuted">@{user.email?.split("@")[0]}</p>
+          <h1 className="text-3xl font-bold">{dbUser.name}</h1>
+          <p className="text-textMuted">{dbUser.email}</p>
 
-          <p className="mt-4 text-sm max-w-md">
-            Cinefilo. Amante del thriller psicológico y el sci-fi. 🎥
-          </p>
-
-          {/* Stats */}
           <div className="flex justify-center md:justify-start gap-8 mt-6">
-            <div>
-              <Link href="/perfil/vistas">
+            <Link href="/perfil/vistas">
+              <div>
                 <p className="font-bold text-lg">{stats.watched}</p>
                 <p className="text-textMuted text-sm">Watched</p>
-              </Link>
-            </div>
-            <div>
-              <Link href="/perfil/favoritas">
+              </div>
+            </Link>
+
+            <Link href="/perfil/favoritas">
+              <div>
                 <p className="font-bold text-lg">{stats.favorites}</p>
                 <p className="text-textMuted text-sm">Favorites</p>
-              </Link>
-            </div>
-            <div>
-              <Link href="/perfil/watchlist">
+              </div>
+            </Link>
+
+            <Link href="/perfil/watchlist">
+              <div>
                 <p className="font-bold text-lg">{stats.lists}</p>
                 <p className="text-textMuted text-sm">WatchLists</p>
-              </Link>
-            </div>
+              </div>
+            </Link>
           </div>
         </div>
       </div>
 
-      {/* FAVORITAS */}
+      {/* FEATURED */}
       <div className="mt-16">
-        <h2 className="text-xl font-semibold mb-6">⭐ Favorites</h2>
+        <h2 className="text-xl font-semibold mb-6">Destacadas</h2>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          {favoriteMovies.map((movie) => (
-            <div
-              key={movie.id}
-              className="bg-bgCard rounded-2xl overflow-hidden shadow-lg hover:scale-105 transition-transform"
-            >
-              <div className="h-64 bg-gray-800" />
-              <div className="p-3">
-                <p className="text-sm font-medium truncate">{movie.title}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+          {slots.map((slot) => {
+            const movieInSlot = validFeatured.find((m) => m?.slot === slot);
 
-      {/* ACTIVIDAD (placeholder) */}
-      <div className="mt-16">
-        <h2 className="text-xl font-semibold mb-6">Recent Activity</h2>
-        <div className="bg-bgCard p-6 rounded-2xl border border-borderMain">
-          <p className="text-textMuted text-sm">No recent activity yet.</p>
+            if (!movieInSlot) {
+              return (
+                <Link
+                  key={slot}
+                  href={`/perfil/featured/select?slot=${slot}`}
+                  className="aspect-2/3 bg-bgCard border-2 border-dashed border-borderMain rounded-2xl flex items-center justify-center hover:opacity-80 transition"
+                >
+                  <span className="text-4xl text-textMuted">+</span>
+                </Link>
+              );
+            }
+
+            const poster = movieInSlot.movie.poster_path
+              ? `${process.env.NEXT_PUBLIC_TMDB_IMAGE_BASE}/w342${movieInSlot.movie.poster_path}`
+              : null;
+
+            return (
+              <Link
+                key={slot}
+                href={`/perfil/featured/select?slot=${slot}`}
+                className="group relative rounded-2xl overflow-hidden shadow-lg"
+              >
+                <div className="aspect-2/3 w-full relative">
+                  {poster ? (
+                    <Image
+                      src={poster}
+                      alt={movieInSlot.movie.title}
+                      fill
+                      className="object-cover transition group-hover:scale-105"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gray-800" />
+                  )}
+                </div>
+              </Link>
+            );
+          })}
         </div>
       </div>
+      <hr className="text-2xl"></hr>
+
+      {/* ÚLTIMAS VISTAS */}
+      <div className="mt-16 mb-20">
+        <h2 className="text-xl font-semibold mb-6">Últimas vistas</h2>
+
+        {recentMovies.length === 0 ? (
+          <div className="bg-bgCard p-6 rounded-2xl border border-borderMain">
+            <p className="text-textMuted text-sm">
+              No viste ninguna película todavía.
+            </p>
+          </div>
+        ) : (
+          <SimpleCarrusel movies={recentMovies} />
+        )}
+      </div>
+      <hr className="mb-40 text-2xl"></hr>
     </div>
   );
 }
